@@ -6,7 +6,7 @@ Install and configure OpenVPN. Build and manage your own OpenVPN server.
 Requirements
 ------------
 
-The role should be used along with gavika.easy_rsa
+The role should be used along with `gavika.easy_rsa`.
 
 Role Variables
 --------------
