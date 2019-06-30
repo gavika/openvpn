@@ -1,7 +1,7 @@
 gavika.openvpn
 =========
 
-Install and configure openvpn
+Install and configure OpenVPN. Build and manage your own OpenVPN server.
 
 Requirements
 ------------
