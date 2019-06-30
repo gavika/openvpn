@@ -1,0 +1,36 @@
+---
+- name: Ensure openvpn_server_ip_address is set
+  assert:
+    that:
+      - openvpn_server_ip_address | length > 0
+    fail_msg: "The openvpn_server_ip_address is not. Cannot generate client configuration"
+    success_msg: "The openvpn_server_ip_address is set. All good."
+
+- name: Set basename
+  set_fact:
+    openvpn_inner_generated_client_name: "{{ (outer_item.path|basename|splitext)[0] }}"
+
+- name: Set crt value
+  slurp:
+    src: "/home/easyrsa/client-configs/keys/{{ openvpn_inner_generated_client_name }}.crt"
+  register: openvpn_inner_generated_cert_content
+
+- name: Set key value
+  slurp:
+    src: "/home/easyrsa/client-configs/keys/{{ openvpn_inner_generated_client_name }}.key"
+  register: openvpn_inner_generated_key_content
+
+- name: Client configuration directory
+  file:
+    path: "/home/easyrsa/client-configs/generated/{{ openvpn_inner_generated_client_name }}"
+    state: directory
+    owner: easyrsa
+    group: easyrsa
+
+- name: Generate client configuration
+  template:
+    src: home/easyrsa/client-configs/client.conf
+    dest: "/home/easyrsa/client-configs/generated/{{ openvpn_inner_generated_client_name }}/{{ openvpn_inner_generated_client_name }}{{ item.suffix }}.ovpn"
+    owner: easyrsa
+    group: easyrsa
+  loop: "{{ openvpn_client_config_types }}"

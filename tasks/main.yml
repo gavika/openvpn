@@ -1,0 +1,349 @@
+---
+# TODO
+# Documentation tips to backup
+# Molecule test for Ubuntu 18.04
+# Molecule test for CentOS 7
+
+# Wishlist
+# Molecule test with Vagrant provider
+# Molecule test with EC2 provider?
+# Aamzon Linux, RHEL, Debian support
+# Upload client configurations to S3, GCP bucket
+# Scaling - horizontal
+# Terraform to create servers in AWS
+# Terraform to create servers in DigitalOcean
+# Terraform to create in GCP
+# Linode?
+- name: Directory to store client configurations
+  file:
+    path: /home/easyrsa/client-configs
+    state: directory
+    mode: 0700
+    owner: easyrsa
+    group: easyrsa
+
+- name: Directory to store client keys
+  file:
+    path: "/home/easyrsa/client-configs/{{ item }}"
+    state: directory
+    owner: easyrsa
+    group: easyrsa
+  loop:
+    - keys
+    - keys/global
+    - generated
+
+- name: Install openvpn - Ubuntu
+  include_tasks: install_ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install openvpn - CentOS
+  include_tasks: install_el.yml
+  when: ansible_distribution == 'CentOS'
+
+- name: Stat server.req
+  stat:
+    path: /home/easyrsa/easyrsa/pki/reqs/server.req
+  register: stat_server_req
+
+- name: Generate server request
+  expect:
+    command: "{{ easyrsa_bin }} gen-req server nopass"
+    chdir: /home/easyrsa/easyrsa/
+    responses:
+      (.*)Common Name(.*): ""
+  become: true
+  become_user: easyrsa
+  when:
+    - not stat_server_req.stat.exists
+
+- name: Copy server.key to openvpn
+  copy:
+    src: /home/easyrsa/easyrsa/pki/private/server.key
+    dest: /etc/openvpn/
+    mode: 0700
+    remote_src: true
+
+- name: Fetch serverkey
+  fetch:
+    src: /home/easyrsa/easyrsa/pki/reqs/server.req
+    dest: "{{ easy_rsa_local_pool_directory }}/server/"
+    flat: true
+  register: server_req_fetch
+
+- name: Stat ca.crt locally
+  stat:
+    path: "{{ easy_rsa_local_pool_directory }}/ca.crt"
+  register: result_local_stat_ca_crt
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: OpenVPN configuration - upload ca.crt
+  copy:
+    src: "{{ easy_rsa_local_pool_directory }}/ca.crt"
+    dest: /etc/openvpn/
+  when: result_local_stat_ca_crt.stat.exists
+
+- name: Stat server.crt
+  stat:
+    path: "{{ easy_rsa_local_pool_directory }}/issued/server/server.crt"
+  register: result_stat_server_crt
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Upload server.crt
+  copy:
+    src: "{{ easy_rsa_local_pool_directory }}/issued/server/server.crt"
+    dest: /etc/openvpn/
+  when: result_stat_server_crt.stat.exists
+
+- name: Stat DH key
+  stat:
+    path: /home/easyrsa/easyrsa/pki/dh.pem
+  become: true
+  become_user: easyrsa
+  register: result_stat_dh
+
+- name: Generate Diffie-Hellman key
+  command: "{{ easyrsa_bin }} gen-dh"
+  args:
+    chdir: /home/easyrsa/easyrsa/
+  become: true
+  become_user: easyrsa
+  when: not result_stat_dh.stat.exists
+
+- name: Stat HMAC signature
+  stat:
+    path: /home/easyrsa/easyrsa/ta.key
+  become: true
+  become_user: easyrsa
+  register: result_stat_ta
+
+- name: Generate HMAC signature
+  command: "openvpn --genkey --secret ta.key"
+  args:
+    chdir: /home/easyrsa/easyrsa/
+  become: true
+  become_user: easyrsa
+  when: not result_stat_ta.stat.exists
+
+- name: Copy DH to openvpn
+  copy:
+    src: /home/easyrsa/easyrsa/pki/dh.pem
+    dest: /etc/openvpn
+    remote_src: true
+  when: result_stat_dh.stat.exists
+  become: true
+  tags:
+    - molecule-notest
+
+- name: Copy TA to openvpn
+  copy:
+    src: /home/easyrsa/easyrsa/ta.key
+    dest: /etc/openvpn
+    remote_src: true
+    mode: 0700
+  when: result_stat_ta.stat.exists
+  tags:
+    - molecule-notest
+
+- name: Copy TA to client configs
+  copy:
+    src: /home/easyrsa/easyrsa/ta.key
+    dest: /home/easyrsa/client-configs/keys/global/
+    remote_src: true
+    owner: easyrsa
+    group: easyrsa
+  when: result_stat_ta.stat.exists
+  tags:
+    - molecule-notest
+
+- name: Stat list of client requests
+  stat:
+    path: "/home/easyrsa/easyrsa/pki/reqs/{{ item }}.req"
+  loop: "{{ openvpn_client_users }}"
+  register: result_stat_openvpn_client_requests
+
+- name: Prepare list of client requests to generate
+  set_fact:
+    openvpn_client_users_filtered: "{{ openvpn_client_users_filtered }} + [ '{{ item.item }}' ]"
+  loop: "{{ result_stat_openvpn_client_requests.results }}"
+  when: not item.stat.exists
+
+- name: Generate client requests
+  expect:
+    command: "{{ easyrsa_bin }} gen-req {{ item }} nopass"
+    chdir: /home/easyrsa/easyrsa/
+    responses:
+      (.*)Common Name(.*): ""
+  become: true
+  become_user: easyrsa
+  loop: "{{ openvpn_client_users_filtered }}"
+  register: result_generate_client_requests
+
+- name: Copy client requests to client configs directory
+  copy:
+    remote_src: true
+    src: "/home/easyrsa/easyrsa/pki/reqs/{{ item.item }}.req"
+    dest: /home/easyrsa/client-configs/keys/
+  loop: "{{ result_generate_client_requests.results }}"
+  become: true
+  become_user: easyrsa
+
+- name: Copy client keys to client configs directory
+  copy:
+    remote_src: true
+    src: "/home/easyrsa/easyrsa/pki/private/{{ item.item }}.key"
+    dest: /home/easyrsa/client-configs/keys/
+  loop: "{{ result_generate_client_requests.results }}"
+  become: true
+  become_user: easyrsa
+
+- name: Fetch client requests
+  fetch:
+    src: "/home/easyrsa/client-configs/keys/{{ item.item }}.req"
+    dest: "{{ easy_rsa_local_pool_directory }}/client/"
+    flat: true
+  loop: "{{ result_generate_client_requests.results }}"
+
+- name: Upload client certificates
+  synchronize:
+    src: "{{ easy_rsa_local_pool_directory }}/issued/client/"
+    dest: /home/easyrsa/client-configs/keys/
+    owner: false
+    group: false
+  become: true
+  become_user: easyrsa
+
+- name: Fix ownership of client configurations
+  file:
+    path: /home/easyrsa/client-configs/keys/
+    owner: easyrsa
+    group: easyrsa
+    recurse: True
+
+- name: Stat crl locally
+  stat:
+    path: "{{ easy_rsa_local_pool_directory }}/crl/crl.pem"
+  delegate_to: 127.0.0.1
+  become: false
+  register: result_stat_crl_locally
+
+- name: Copy crl to sever
+  copy:
+    src: "{{ easy_rsa_local_pool_directory }}/crl/crl.pem"
+    dest: /etc/openvpn/
+  notify:
+    - restart openvpn
+  when: result_stat_crl_locally.stat.exists
+
+- name: Stat crl on server
+  stat:
+    path: /etc/openvpn/crl.pem
+  register: result_stat_server_crl
+
+- name: Openvpn server configuration
+  template:
+    src: etc/openvpn/server.conf
+    dest: /etc/openvpn/
+  notify:
+    - restart openvpn
+
+- name: Ensure IP forwarding is enabled
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: "{{ openvpn_verify_sysctl_set }}"
+    state: present
+    reload: true
+  when: openvpn_setup_networking
+
+- name: Setup UFW
+  include_tasks: firewall_ubuntu.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - openvpn_setup_networking
+
+- name: Setup firewalld on EL
+  include_tasks: firewall_el.yml
+  when:
+    - ansible_distribution == 'CentOS'
+    - openvpn_setup_networking
+
+- name: Stat designated files
+  stat:
+    path: "/etc/openvpn/{{ item }}"
+  loop: "{{ openvpn_stat_files }}"
+  register: result_stat_designated_files
+
+- name: Check whether we are ready to start openvpn server
+  set_fact:
+    openvpn_ready_start: false
+  when: not item.stat.exists
+  loop: "{{ result_stat_designated_files.results }}"
+
+- name: Check whether we are ready to start openvpn server
+  set_fact:
+    openvpn_ready_start: false
+  when:
+    - not openvpn_systemd_available
+
+- name: Start and enable OpenVPN service
+  systemd:
+    name: "openvpn@server"
+    state: started
+    enabled: true
+  when: openvpn_ready_start|bool
+
+- name: Copy ca.crt to client configuration pool
+  copy:
+    src: "{{ easy_rsa_local_pool_directory }}/ca.crt"
+    dest: /home/easyrsa/client-configs/keys/global/
+    owner: easyrsa
+    group: easyrsa
+  when: result_local_stat_ca_crt.stat.exists
+
+- name: Stat ca.crt in client configs
+  stat:
+    path: /home/easyrsa/client-configs/keys/global/ca.crt
+  register: result_stat_ca_crt_client_configs
+
+- name: Slurp ca.crt content
+  slurp:
+    src: "/home/easyrsa/client-configs/keys/global/ca.crt"
+  register: openvpn_ca_content_base64encoded
+  when: result_stat_ca_crt_client_configs.stat.exists
+
+- name: Stat ta.key in client configs
+  stat:
+    path: /home/easyrsa/client-configs/keys/global/ta.key
+  register: result_stat_ta_client_configs
+
+- name: Slurp ta.key content
+  slurp:
+    src: "/home/easyrsa/client-configs/keys/global/ta.key"
+  register: openvpn_tls_auth_content_base64encoded
+  when: result_stat_ta_client_configs.stat.exists
+
+- name: Find list of clients in clients config
+  find:
+    recurse: False
+    patterns: "*.crt"
+    paths: /home/easyrsa/client-configs/keys/
+  register: result_client_config_clients
+
+- name: Generate client configs
+  include_tasks: generate_client_configs.yml
+  loop: "{{ result_client_config_clients.files }}"
+  loop_control:
+    loop_var: outer_item
+  when:
+    - result_stat_ta_client_configs.stat.exists
+    - result_stat_ca_crt_client_configs.stat.exists
+
+- name: Copy generated client configuratsion to local pool
+  synchronize:
+    src: /home/easyrsa/client-configs/generated
+    dest: "{{ easy_rsa_local_pool_directory }}"
+    mode: pull
+  when: openvpn_generated_configurations_local_pool|bool

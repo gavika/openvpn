@@ -1,0 +1,18 @@
+---
+- name: reload ufw
+  ufw:
+    state: reloaded
+
+- name: disable ufw
+  ufw:
+    state: disabled
+
+- name: enable ufw
+  ufw:
+    state: enabled
+
+- name: restart openvpn
+  systemd:
+    name: "openvpn@server"
+    state: restarted
+  when: openvpn_ready_start|bool

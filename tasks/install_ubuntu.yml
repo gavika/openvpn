@@ -1,0 +1,7 @@
+---
+- name: Install openvpn
+  apt:
+    name:
+      - openvpn
+    update_cache: True
+    force_apt_get: True

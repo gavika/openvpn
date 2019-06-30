@@ -1,0 +1,29 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    - centos_base_enable_epel: true
+    - easy_rsa_ca_server_mode: false
+    - easy_rsa_local_pool_directory: /tmp/easy_rsa_docket_test
+    - openvpn_verify_sysctl_set: false
+    - openvpn_setup_networking: false
+    - openvpn_systemd_available: false
+    - easy_rsa_req_country: "IN"
+    - easy_rsa_req_province: "KA"
+    - easy_rsa_req_city: "Bangalore"
+    - easy_rsa_req_org: "My Organization"
+    - easy_rsa_req_email: "admin@example.com"
+    - easy_rsa_req_ou: "My Organization Unit"
+  pre_tasks:
+    - name: pexpect
+      apt:
+        name:
+          - python-pexpect
+          - rsync
+        update_cache: true
+      when: ansible_distribution == 'Ubuntu'
+  roles:
+    - role: bngsudheer.centos_base
+      when: ansible_distribution == 'CentOS'
+    - role: gavika.easy_rsa
+    - role: openvpn

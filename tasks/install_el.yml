@@ -1,0 +1,6 @@
+---
+- name: Install openvpn
+  yum:
+    name:
+      - openvpn
+      - firewalld

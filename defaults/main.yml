@@ -1,0 +1,67 @@
+---
+# Internal variables
+openvpn_client_users_filtered: []
+openvpn_ca_content_base64encoded: ""
+openvpn_cert_content: ""
+openvpn_key_content: ""
+openvpn_tls_auth_content_base64encoded: ""
+openvpn_client_configs: {}
+openvpn_verify_sysctl_set: true
+openvpn_setup_networking: true
+openvpn_systemd_available: true
+openvpn_client_config_types:
+  - name: regular
+    suffix: ""
+    group_name: nogroup
+    update_resolv: false
+  - name: el
+    suffix: "-el"
+    group_name: nobody
+    update_resolv: false
+  - name: update_resolv
+    suffix: "-update-resolv"
+    group_name: nogroup
+    update_resolv: true
+
+# Internal variable. Check these files before starting openvpn
+openvpn_stat_files:
+  - ca.crt
+  - dh.pem
+  - server.conf
+  - server.crt
+  - server.key
+  - ta.key
+
+# Internal variable. Are we ready to start openvpn?
+openvpn_ready_start: true
+
+# The easyras binary path
+easyrsa_bin: /usr/share/easy-rsa/3/easyrsa
+
+# End of internal variables
+
+# The local pool directory to store requests and certificatess
+# No trailing /
+easy_rsa_local_pool_directory: /tmp/ca_openvpn_pool
+
+# The list of openvpn users.
+openvpn_client_users: []
+
+# Openvpn Port
+openvpn_port: "1194"
+
+# Openvpn protocol
+openvpn_protocol: "udp"
+
+# The IP address of the openvpn server
+# used in client cofiguration
+openvpn_server_ip_address: ""
+
+openvpn_generated_configurations_local_pool: false
+
+openvpn_route_all_traffic: true
+openvpn_use_opendns_public_dns: true
+
+openvpn_additional_configs: []
+
+openvpn_default_firewalld_zone: "public"

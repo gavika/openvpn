@@ -1,0 +1,3 @@
+---
+- src: bngsudheer.centos_base
+- src: gavika.easy_rsa

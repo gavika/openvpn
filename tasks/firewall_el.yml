@@ -1,0 +1,59 @@
+---
+- name: Ensure firewalld is enabled and started
+  systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Check whether we already have added openvpn subnet to POSTROUTING chain
+  command: "firewall-cmd --permanent --direct --get-passthroughs ipv4"
+  register: result_firewalld_postrouting_check
+  changed_when: false
+
+- name: Set string to check
+  set_fact:
+    openvpn_firewalld_result_to_check: "-t nat -A POSTROUTING -s 10.8.0.0/24 -o {{ ansible_default_ipv4.interface }} -j MASQUERADE"
+
+- name: Forward routing to openvpn subnet
+  command: "firewall-cmd {{ item }} --direct --passthrough ipv4 -t nat -A POSTROUTING -s 10.8.0.0/24 -o {{ ansible_default_ipv4.interface }} -j MASQUERADE"
+  loop:
+    - "--permanent"
+    - ""
+  when: 'openvpn_firewalld_result_to_check not in result_firewalld_postrouting_check.stdout'
+
+- name: Enable masquerading
+  firewalld:
+    masquerade: True
+    zone: "{{ openvpn_default_firewalld_zone }}"
+    state: enabled
+    permanent: "{{ item }}"
+  loop:
+    - true
+    - false
+
+- name: Enable openvpn service
+  firewalld:
+    service: openvpn
+    permanent: "{{ item }}"
+    state: enabled
+  loop:
+    - true
+    - false
+
+- name: Enable ssh service
+  firewalld:
+    service: ssh
+    permanent: "{{ item }}"
+    state: enabled
+  loop:
+    - true
+    - false
+
+- name: Enable custom openvpn port and protocol
+  firewalld:
+    port: "{{ openvpn_port }}/{{ openvpn_protocol }}"
+    permanent: "{{ item }}"
+    state: enabled
+  loop:
+    - true
+    - false

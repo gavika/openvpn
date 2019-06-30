@@ -1,0 +1,37 @@
+---
+- name: ufw before rules
+  template:
+    src: etc/ufw/before.rules
+    dest: /etc/ufw/
+  notify:
+    - reload ufw
+
+- name: Set ufw default forward policy to accept
+  ufw:
+    direction: routed
+    default: allow
+    route: true
+  notify:
+    - reload ufw
+
+
+- name: ufw allow openvpn port and protocol
+  ufw:
+    rule: allow
+    port: "{{ openvpn_port }}"
+    protocol: "{{ openvpn_protocol }}"
+  notify:
+    - reload ufw
+
+
+- name: ufw allow openssh
+  ufw:
+    rule: allow
+    name: OpenSSH
+  notify:
+    - reload ufw
+
+
+- name: Ensure ufw is enabled and started
+  ufw:
+    state: enabled
