@@ -61,7 +61,7 @@ Example playbook to setup CA server: `easy-rsa-playbook.yml`
     easy_rsa_req_org: "Gavika"
     easy_rsa_req_email: "admin@gavika.com"
     easy_rsa_req_ou: "Gavika"
-    easy_rsa_pool_directory: /tmp/ca_openvpn_pool # No trailing /
+    easy_rsa_local_pool_directory: /tmp/ca_openvpn_pool # No trailing /
     easy_rsa_server_request_to_import: "server.req"
     easy_rsa_ca_server_mode: true
   roles:
