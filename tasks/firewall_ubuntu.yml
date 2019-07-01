@@ -14,7 +14,6 @@
   notify:
     - reload ufw
 
-
 - name: ufw allow openvpn port and protocol
   ufw:
     rule: allow
@@ -23,14 +22,12 @@
   notify:
     - reload ufw
 
-
 - name: ufw allow openssh
   ufw:
     rule: allow
     name: OpenSSH
   notify:
     - reload ufw
-
 
 - name: Ensure ufw is enabled and started
   ufw:

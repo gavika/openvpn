@@ -256,7 +256,7 @@
     sysctl_set: "{{ openvpn_verify_sysctl_set }}"
     state: present
     reload: true
-  when: openvpn_setup_networking
+  when: openvpn_setup_networking|bool
 
 - name: Setup UFW
   include_tasks: firewall_ubuntu.yml
