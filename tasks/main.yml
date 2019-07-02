@@ -339,7 +339,7 @@
     - result_stat_ta_client_configs.stat.exists
     - result_stat_ca_crt_client_configs.stat.exists
 
-- name: Copy generated client configuratsion to local pool
+- name: Copy generated client configuration to local pool
   synchronize:
     src: /home/easyrsa/client-configs/generated
     dest: "{{ easy_rsa_local_pool_directory }}"
