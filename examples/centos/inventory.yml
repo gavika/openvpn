@@ -1,0 +1,18 @@
+all:
+  hosts:
+    placeholder
+  children:
+    ca_server:
+      hosts:
+        dev-ca-01.example.com:
+          ansible_become: true
+          ansible_user: centos
+          ansible_host: 192.168.1.10
+          easy_rsa_ca_server_mode: true
+    openvpn_server:
+      hosts:
+        dev-vpn-01.example.com:
+          ansible_become: true
+          ansible_user: centos
+          ansible_host: 192.168.1.11
+          openvpn_server_ip_address: 192.168.1.11

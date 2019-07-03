@@ -1,0 +1,15 @@
+---
+- hosts: ca_server
+  vars:
+    centos_base_enable_epel: true
+    easy_rsa_req_country: "IN"
+    easy_rsa_req_province: "KA"
+    easy_rsa_req_city: "Bangalore"
+    easy_rsa_req_org: "Example"
+    easy_rsa_req_email: "admin@example.com"
+    easy_rsa_req_ou: "Example"
+    easy_rsa_local_pool_directory: /tmp/ca_openvpn_pool_example
+    easy_rsa_ca_server_mode: true
+  roles:
+    - role: bngsudheer.centos_base
+    - role: gavika.easy_rsa

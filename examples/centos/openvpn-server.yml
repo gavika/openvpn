@@ -1,0 +1,19 @@
+---
+- hosts: openvpn_server
+  vars:
+    centos_base_enable_epel: true
+    openvpn_client_users:
+      - janedoe
+      - johndoe
+    openvpn_generated_configurations_local_pool: true
+    easy_rsa_req_country: "IN"
+    easy_rsa_req_province: "KA"
+    easy_rsa_req_city: "Bangalore"
+    easy_rsa_req_org: "My Organization"
+    easy_rsa_req_email: "admin@example.com"
+    easy_rsa_req_ou: "My Organization Unit"
+    easy_rsa_local_pool_directory: /tmp/ca_openvpn_pool_example
+  roles:
+    - role: bngsudheer.centos_base
+    - role: gavika.easy_rsa
+    - role: gavika.openvpn
