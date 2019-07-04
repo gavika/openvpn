@@ -5,6 +5,8 @@ Install and configure OpenVPN. Build and manage your own OpenVPN server.
 
 https://www.techchorus.net/blog/run-your-own-openvpn-server/
 
+Also, take a look at the `examples` directory.
+
 Requirements
 ------------
 
