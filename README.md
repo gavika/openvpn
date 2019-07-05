@@ -38,6 +38,7 @@ have to execute `open-vpn-playbook.yml` twice and `easy-rsa-playbook.yml` once.
 
 Playbook execution flow:
 ![Playbook execution flow](https://www.techchorus.net/static/blog/vpn-flow-small.png "Ansible playbook execution flow")
+[Full size flowchart](https://www.techchorus.net/static/blog/vpn-flow.png)
 
 Here's an example of executing the playbooks:
 ```sh
