@@ -35,6 +35,10 @@ needs. You are responsible to execute the roles the required number of times and
 in required order. Examples are provided in documentation. Typically, you will
 have to execute `open-vpn-playbook.yml` twice and `easy-rsa-playbook.yml` once.
 
+
+Playbook execution flow:
+![Playbook execution flow](https://www.techchorus.net/static/blog/vpn-flow-small.png "Ansible playbook execution flow")
+
 Here's an example of executing the playbooks:
 ```sh
 # openvpn: setup local pool directories, install openvpn, create server request,
