@@ -34,3 +34,12 @@
     owner: easyrsa
     group: easyrsa
   loop: "{{ openvpn_client_config_types }}"
+
+- name: Sync files to s3 bucket
+  s3_sync:
+    bucket: "{{ openvpn_s3_bucket }}"
+    file_root: "{{ easy_rsa_local_pool_directory }}"
+    key_prefix: "{{ openvpn_s3_key_prefix }}"
+    region: "{{ openvpn_s3_bucket_region }}"
+  delegate_to: localhost
+  when: openvpn_s3_bucket|length > 0

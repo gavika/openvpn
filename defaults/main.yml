@@ -65,3 +65,7 @@ openvpn_use_opendns_public_dns: true
 openvpn_additional_configs: []
 
 openvpn_default_firewalld_zone: "public"
+
+openvpn_s3_bucket: ""
+
+openvpn_s3_key_prefix: ""
