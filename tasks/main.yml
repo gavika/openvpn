@@ -10,7 +10,7 @@
 # Scaling - horizontal
 # Terraform to create servers in AWS
 # Terraform to create servers in DigitalOcean
-# Terraform to create in GCP
+# Terraform to create servers in GCP
 # Linode?
 - name: Directory to store client configurations
   file:

@@ -5,6 +5,8 @@ Install and configure OpenVPN. Build and manage your own OpenVPN server.
 
 https://www.techchorus.net/blog/run-your-own-openvpn-server/
 
+Also, take a look at the `examples` directory.
+
 Requirements
 ------------
 
@@ -32,6 +34,11 @@ In order to build a CA server and an OpenVPN server using `gavika.easy_rsa` and
 needs. You are responsible to execute the roles the required number of times and
 in required order. Examples are provided in documentation. Typically, you will
 have to execute `open-vpn-playbook.yml` twice and `easy-rsa-playbook.yml` once.
+
+
+Playbook execution flow:
+![Playbook execution flow](https://www.techchorus.net/static/blog/vpn-flow-small.png "Ansible playbook execution flow")
+[Full size flowchart](https://www.techchorus.net/static/blog/vpn-flow.png)
 
 Here's an example of executing the playbooks:
 ```sh
