@@ -220,14 +220,14 @@
     group: easyrsa
     recurse: True
 
-- name: Stat crl locally
+- name: Stat CRL locally
   stat:
     path: "{{ easy_rsa_local_pool_directory }}/crl/crl.pem"
   delegate_to: 127.0.0.1
   become: false
   register: result_stat_crl_locally
 
-- name: Copy crl to sever
+- name: Copy CRL to sever
   copy:
     src: "{{ easy_rsa_local_pool_directory }}/crl/crl.pem"
     dest: /etc/openvpn/
@@ -235,7 +235,7 @@
     - restart openvpn
   when: result_stat_crl_locally.stat.exists
 
-- name: Stat crl on server
+- name: Stat CRL on server
   stat:
     path: /etc/openvpn/crl.pem
   register: result_stat_server_crl
