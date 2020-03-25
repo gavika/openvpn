@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 lint:
-  name: yamllint
+  - yamllint
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
@@ -21,8 +21,8 @@ platforms:
 provisioner:
   name: ansible
   lint:
-    name: ansible-lint
+    - ansible-lint
 verifier:
   name: testinfra
   lint:
-    name: flake8
+    - flake8
