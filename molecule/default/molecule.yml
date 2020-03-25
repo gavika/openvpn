@@ -6,7 +6,8 @@ dependency:
     ignore-errors: false
 driver:
   name: docker
-lint: "yamllint"
+lint: |
+  yamllint
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
@@ -19,7 +20,9 @@ platforms:
     command: ${MOLECULE_DOCKER_COMMAND:-""}
 provisioner:
   name: ansible
-  lint: "ansible-lint"
+  lint: |
+    ansible-lint
 verifier:
   name: testinfra
-  lint: "flake8"
+  lint: |
+    flake8
