@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 lint: |
-  yamllint
+  yamllint .
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
