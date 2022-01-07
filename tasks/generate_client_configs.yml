@@ -35,7 +35,7 @@
     group: easyrsa
   loop: "{{ openvpn_client_config_types }}"
 
-- name: Sync files to s3 bucket
+- name: Sync files to S3 bucket
   s3_sync:
     bucket: "{{ openvpn_s3_bucket }}"
     file_root: "{{ easy_rsa_local_pool_directory }}"

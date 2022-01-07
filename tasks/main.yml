@@ -18,11 +18,11 @@
     - keys/global
     - generated
 
-- name: Install openvpn - Ubuntu
+- name: Install openvpn on Ubuntu
   include_tasks: install_ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
 
-- name: Install openvpn - CentOS
+- name: Install openvpn on CentOS
   include_tasks: install_el.yml
   when: ansible_distribution == 'CentOS'
 
@@ -49,7 +49,7 @@
     mode: 0700
     remote_src: true
 
-- name: Fetch serverkey
+- name: Fetch server key
   fetch:
     src: /home/easyrsa/easyrsa/pki/reqs/server.req
     dest: "{{ easy_rsa_local_pool_directory }}/server/"
@@ -82,7 +82,7 @@
     dest: /etc/openvpn/
   when: result_stat_server_crt.stat.exists
 
-- name: Stat DH key
+- name: Stat Diffie-Hellman key
   stat:
     path: /home/easyrsa/easyrsa/pki/dh.pem
   become: true
@@ -214,7 +214,7 @@
   become: false
   register: result_stat_crl_locally
 
-- name: Copy CRL to sever
+- name: Copy CRL to server
   copy:
     src: "{{ easy_rsa_local_pool_directory }}/crl/crl.pem"
     dest: /etc/openvpn/
