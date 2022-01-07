@@ -26,7 +26,7 @@ openvpn_client_config_types:
     update_resolv: true
     systemd_resolved: true
   - name: systemd_resolved
-    suffix: ""
+    suffix: "-systemd-resolved"
     group_name: nogroup
     update_resolv: false
     systemd_resolved: true
