@@ -14,14 +14,22 @@ openvpn_client_config_types:
     suffix: ""
     group_name: nogroup
     update_resolv: false
+    systemd_resolved: true
   - name: el
     suffix: "-el"
     group_name: nobody
     update_resolv: false
+    systemd_resolved: true
   - name: update_resolv
     suffix: "-update-resolv"
     group_name: nogroup
     update_resolv: true
+    systemd_resolved: true
+  - name: systemd_resolved
+    suffix: ""
+    group_name: nogroup
+    update_resolv: false
+    systemd_resolved: true
 
 # Internal variable. Check these files before starting openvpn
 openvpn_stat_files:

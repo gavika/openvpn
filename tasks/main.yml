@@ -1,17 +1,4 @@
 ---
-# TODO
-# Documentation tips to backup
-
-# Wishlist
-# Molecule test with Vagrant provider
-# Molecule test with EC2 provider?
-# Aamzon Linux, RHEL, Debian support
-# Upload client configurations to S3, GCP bucket
-# Scaling - horizontal
-# Terraform to create servers in AWS
-# Terraform to create servers in DigitalOcean
-# Terraform to create servers in GCP
-# Linode?
 - name: Directory to store client configurations
   file:
     path: /home/easyrsa/client-configs
