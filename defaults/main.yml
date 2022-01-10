@@ -14,9 +14,14 @@ openvpn_client_config_types:
     suffix: ""
     group_name: nogroup
     update_resolv: false
-    systemd_resolved: true
+    systemd_resolved: false
   - name: el
     suffix: "-el"
+    group_name: nobody
+    update_resolv: false
+    systemd_resolved: false
+  - name: el_systemd_resolved
+    suffix: "-el-systemd-resolved"
     group_name: nobody
     update_resolv: false
     systemd_resolved: true
@@ -24,7 +29,7 @@ openvpn_client_config_types:
     suffix: "-update-resolv"
     group_name: nogroup
     update_resolv: true
-    systemd_resolved: true
+    systemd_resolved: false
   - name: systemd_resolved
     suffix: "-systemd-resolved"
     group_name: nogroup
