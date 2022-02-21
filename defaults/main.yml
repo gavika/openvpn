@@ -48,7 +48,7 @@ openvpn_stat_files:
 # Internal variable. Are we ready to start openvpn?
 openvpn_ready_start: true
 
-# The easyras binary path
+# The `easyrsa` binary path
 easyrsa_bin: /usr/share/easy-rsa/3/easyrsa
 
 # End of internal variables
