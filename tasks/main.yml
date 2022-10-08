@@ -151,7 +151,7 @@
 
 - name: Prepare list of client requests to generate
   set_fact:
-    openvpn_client_users_filtered: "{{ openvpn_client_users_filtered }} + [ '{{ item.item }}' ]"
+    openvpn_client_users_filtered: "{{ (openvpn_client_users_filtered | default([]) ) + [item.item] }}"
   loop: "{{ result_stat_openvpn_client_requests.results }}"
   when: not item.stat.exists
 

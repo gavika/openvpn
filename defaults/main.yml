@@ -49,7 +49,7 @@ openvpn_stat_files:
 openvpn_ready_start: true
 
 # The `easyrsa` binary path
-easyrsa_bin: /usr/share/easy-rsa/3/easyrsa
+easyrsa_bin: /usr/share/easy-rsa/easyrsa
 
 # End of internal variables
 
