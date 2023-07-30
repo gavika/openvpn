@@ -55,6 +55,11 @@ Dependencies
 ------------
 The `gavika.openvpn` role depends on `gavika.easy_rsa`.
 
+The following collections are required:
+* `community.aws`
+
+The `boto3` Python library is required.
+
 The role `gavika.openvpn` should be used along with `gavika.easy_rsa`.
 
 Example playbook to setup CA server: `easy-rsa-playbook.yml`

@@ -36,7 +36,7 @@
   loop: "{{ openvpn_client_config_types }}"
 
 - name: Sync files to S3 bucket
-  s3_sync:
+  community.aws.s3_sync:
     bucket: "{{ openvpn_s3_bucket }}"
     file_root: "{{ easy_rsa_local_pool_directory }}"
     key_prefix: "{{ openvpn_s3_key_prefix }}"
